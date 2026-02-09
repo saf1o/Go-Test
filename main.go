@@ -2,18 +2,22 @@ package main
 
 import (
 	"log"
+	"net/http"
 
-	router "github.com/saf1o/go-test/internal/controller"
-	db "github.com/saf1o/go-test/internal/model"
+	"github.com/saf1o/go-test/internal/controller"
+
+	"github.com/saf1o/go-test/internal/model"
 )
 
 func main() {
-	if err := db.Init(); err != nil {
+	dsn := "user:password@tcp(127.0.0.1:3306)/game?parseTime=true"
+
+	if err := model.InitDB(dsn); err != nil {
 		log.Fatal(err)
 	}
 
-	r := router.Setup()
-	if err := r.Run(":8080"); err != nil {
-		log.Fatal(err)
-	}
+	controller.InitRouter()
+
+	log.Panicln("server start :8080")
+	http.ListenAndServe(":8080", nil)
 }
