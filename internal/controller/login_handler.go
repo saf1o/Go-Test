@@ -28,7 +28,7 @@ func LoginHandler(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := model.FindByDeviceID(req.DeviceID)
+	user, err := model.FindUserByDeviceID(req.DeviceID)
 	if err != nil {
 		user, err = model.CreateUser(req.DeviceID)
 		if err != nil {
