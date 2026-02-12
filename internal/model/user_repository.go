@@ -3,8 +3,7 @@ package model
 // DB操作関連
 import (
 	"database/sql"
-	//"errors"
-	//"time"
+	"errors"
 )
 
 // DeviceIDからユーザーを取得する
@@ -119,8 +118,21 @@ func StartIdle(userID int) error {
 }
 
 // 放置終了+経験値付与
-func EndIdle(userID int, gainedExp uint64) error {
-	_, err := DB.Exec(`
+func EndIdle(userID int, gainedExp uint64) (*User, error) {
+	user, err := FindUserByID(userID)
+	if err != nil {
+		return nil, err
+	}
+
+	if user == nil {
+		return nil, errors.New("user not found")
+	}
+
+	if !user.IsIdle || user.IdleStartedAt == nil {
+		return user, nil
+	}
+
+	_, err = DB.Exec(`
 		UPDATE users
 		SET
 			is_idle = FALSE,
@@ -128,5 +140,10 @@ func EndIdle(userID int, gainedExp uint64) error {
 			exp = exp + ?
 		WHERE user_id = ?
 	`, gainedExp, userID)
-	return err
+
+	if err != nil {
+		return nil, err
+	}
+
+	return FindUserByID(userID)
 }
