@@ -87,4 +87,15 @@ namespace IdleGame.Models
         public long exp_gained;
         public int idle_minutes;
     }
+
+    /// <summary>
+    /// レベルアップレスポンス
+    /// </summary>
+    [Serializable]
+    public class LevelUpResponse
+    {
+        public User user;
+        public bool leveled_up;
+        public int new_level;
+    }
 }
